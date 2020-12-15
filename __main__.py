@@ -1,5 +1,3 @@
-import mysql.connector
-import os
 import MainMenu
 import Admin
 
@@ -11,7 +9,6 @@ class User:
         self._key = x
 
     def FindUser(self):
-        print(self._key)
         with open("login.txt", 'r') as FILE:
             lines = FILE.readlines()
             for x in lines:
@@ -31,7 +28,7 @@ class User:
 
     def AccountType(self):
         account = self._Account_Type
-        return account
+        Account(account)
 
 
 def StartUp():
@@ -56,13 +53,13 @@ def StartUp():
             key = str(input("Please enter your 6 digit login key: "))
             user = User(key)
             name = user.FindUser()
-            Account()
             return name
 
 
-def Account():
-    print(f"Account type {User().AccountType()}")
-    return User().AccountType()
+def Account(x):
+    account = x
+    print(f"Account type {account}")
+    return account
 
 
 StartUp()
