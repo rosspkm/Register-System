@@ -1,9 +1,3 @@
-# Username: rQl2YoK6Wc
-# Database name: rQl2YoK6Wc
-# Password: KymKNAw4LO
-# Server: remotemysql.com
-# Port: 3306
-
 import mysql.connector
 import os
 import MainMenu
@@ -12,31 +6,32 @@ import Admin
 
 class User:
     def __init__(self, x):
-        self.status = ""
+        self._Account_Type = ""
         self._users = []
         self._key = x
 
     def FindUser(self):
+        print(self._key)
         with open("login.txt", 'r') as FILE:
             lines = FILE.readlines()
             for x in lines:
                 x = x.split(":")
                 self._users.append(x)
-        users = (map(list, self._users))
+                users = (map(list, self._users))
         for i in users:
-            status = i[2]
             if self._key == i[0]:
                 print(f'Welcome {i[1]}')
                 Name = i[1]
-                User.AccountType(status)
+                self._Account_Type = str(i[2])
+                self.AccountType()
                 return Name
             else:
                 print("Invalid login")
                 StartUp()
 
-    def AccountType(self, status):
-        self.status = status
-        return self.status
+    def AccountType(self):
+        account = self._Account_Type
+        return account
 
 
 def StartUp():
@@ -60,15 +55,14 @@ def StartUp():
         while True:
             key = str(input("Please enter your 6 digit login key: "))
             user = User(key)
-            name = user.FindUser
+            name = user.FindUser()
             Account()
             return name
 
 
 def Account():
-    account = User.AccountType
-    print(f"Account type {account}")
-    return account
+    print(f"Account type {User().AccountType()}")
+    return User().AccountType()
 
 
 StartUp()
