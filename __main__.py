@@ -1,66 +1,75 @@
-import MainMenu
 import Admin
-
-
-class User:
-    def __init__(self, x):
-        self._Account_Type = ""
-        self._users = []
-        self._key = x
-
-    def FindUser(self):
-        with open("login.txt", 'r') as FILE:
-            lines = FILE.readlines()
-            for x in lines:
-                x = x.split(":")
-                self._users.append(x)
-                users = (map(list, self._users))
-        for i in users:
-            if self._key == i[0]:
-                print(f'Welcome {i[1]}')
-                Name = i[1]
-                self._Account_Type = str(i[2])
-                self.AccountType()
-                return Name
-            else:
-                print("Invalid login")
-                StartUp()
-
-    def AccountType(self):
-        account = self._Account_Type
-        Account(account)
+import MainMenu
+import Account
 
 
 def StartUp():
-    if __name__ == '__main__':
-        try:
-            with open('data.txt', 'r') as f:
-                print("New Key Created")
-        except IOError:
-            file = open("data.txt", "x")
+    try:
+        with open('data.txt', 'r'):
             print("New Key Created")
-            pass
+    except IOError:
+        open("data.txt", "x")
+        print("New Key Created")
+        pass
 
-        try:
-            with open('login.txt') as f:
-                print("Login DB Loaded")
-        except IOError:
-            file = open("login.txt", "x")
-            print("Welcome to your new register system.\nNew Login Database Created")
-            Admin.NewAdminAccount()
-
-        while True:
-            key = str(input("Please enter your 6 digit login key: "))
-            user = User(key)
-            name = user.FindUser()
-            return name
+    try:
+        with open('login.txt'):
+            print("Login DB Loaded")
+    except IOError:
+        open("login.txt", "x")
+        print("Welcome to your new register system.\nNew Login Database Created")
+        Admin.NewAdminAccount()
 
 
-def Account(x):
-    account = x
-    print(f"Account type {account}")
-    return account
+class_type = Account.Type()
+class_key = Account.Key()
+class_name = Account.Name()
 
 
-StartUp()
-MainMenu.Menu()
+def VerifyKey(key):
+    users = []
+
+    with open("login.txt", 'r') as FILE:
+        lines = FILE.readlines()
+        for i in lines:
+            g = i.split(":")
+            users.append(g)
+
+    users_map = (map(list, users))
+
+    for i in users_map:
+
+        if key == i[0]:
+            print(f'Welcome {i[1]}')
+            # set key to key class
+            class_key.set_key(key)
+
+            # set name to name class
+            name = i[1]
+            class_name.set_name(name)
+
+            # set type to type class
+            account_type = i[2]
+            class_type.set_type(account_type)
+
+        else:
+            print("Invalid login")
+            Loop()
+
+
+def Loop():
+    while True:
+        key = str(input("Please enter your 6 digit login pin: "))
+
+        if len(key) == 6:
+            VerifyKey(key)
+            break
+
+        else:
+            print("Invalid Login pin")
+
+
+if __name__ == '__main__':
+    StartUp()
+    Loop()
+    MainMenu.Menu()
