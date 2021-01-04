@@ -1,73 +1,74 @@
 import Admin
 import MainMenu
-import Account
+import Classes
+from lib import fdb
+import os
+import json
 
 
 def StartUp():
-    try:
-        with open('data.txt', 'r'):
-            print("New Key Created")
-    except IOError:
-        open("data.txt", "x")
-        print("New Key Created")
+    if os.path.exists(f"config.yaml"):
+        with open('config.yaml', 'r') as file:
+            data = file.read()
+            js = json.loads(data)
+            for field, value in js.items():
+                if field == "restaurant":
+                    restaurant.set_restaurant_name(value)
+
+    else:
+        restaurant_name = input("Please enter your restaurant name: ")
+        open(f'config.yaml', 'a')
+        with open(f'config.yaml', 'a') as FILE:
+            data = json.dumps({"restaurant": str(restaurant_name)}, indent=4)
+            FILE.write(data)
+
+    if os.path.isdir(f"./databases/{restaurant.get_restaurant_name()}"):
         pass
 
-    try:
-        with open('login.txt'):
-            print("Login DB Loaded")
-    except IOError:
-        open("login.txt", "x")
-        print("Welcome to your new register system.\nNew Login Database Created")
-        Admin.NewAdminAccount()
+    else:
+        db = fdb.Structure()
+        db.Create(restaurant.get_restaurant_name())
+        tables = ["data", "items", "users", "time-card"]
+        data_tables = ["transaction-account_id", "items", "price", "user-account_id"]
+        item_tables = ["item-account_id", "item-name", "price"]
+        login_items = ["user-account_id", "password", "firstname", "lastname", "email", "phone-number", "account-type"]
+        timecard_items = ["user-account_id", "clock-in", "clock-out"]
 
+        db.AddTable(restaurant.get_restaurant_name(), tables)
+        db.AddField(restaurant.get_restaurant_name(), "data", data_tables)
+        db.AddField(restaurant.get_restaurant_name(), "items", item_tables)
+        db.AddField(restaurant.get_restaurant_name(), "users", login_items)
+        db.AddField(restaurant.get_restaurant_name(), "time-card", timecard_items)
 
-class_type = Account.Type()
-class_key = Account.Key()
-class_name = Account.Name()
-
-
-def VerifyKey(key):
-    users = []
-
-    with open("login.txt", 'r') as FILE:
-        lines = FILE.readlines()
-        for i in lines:
-            g = i.split(":")
-            users.append(g)
-
-    users_map = (map(list, users))
-
-    for i in users_map:
-
-        if key == i[0]:
-            print(f'Welcome {i[1]}')
-            # set key to key class
-            class_key.set_key(key)
-
-            # set name to name class
-            name = i[1]
-            class_name.set_name(name)
-
-            # set type to type class
-            account_type = i[2]
-            class_type.set_type(account_type)
-
-        else:
-            print("Invalid login")
-            Loop()
+        Admin.NewAdminAccount(restaurant.get_restaurant_name())
 
 
 def Loop():
     while True:
-        key = str(input("Please enter your 6 digit login pin: "))
+        key = str(input("Please enter your login key: "))
 
-        if len(key) == 6:
-            VerifyKey(key)
-            break
+        db = fdb.database()
+        db.SelectDB(restaurant.get_restaurant_name())
+        db.SelectTable("users")
+        try:
 
-        else:
-            print("Invalid Login pin")
+            account = db.Get({"password": key})
+            if account is None:
+                continue
+            else:
+                acct_key.set_key(account['password'])
+                acct_name.set_name(account['firstname'])
+                acct_type.set_type(account['account-type'])
+                acct_id.set_id(account['user-id'])
 
+        except IOError:
+            Loop()
+
+acct_type = Classes.Type()
+acct_name = Classes.Name()
+acct_key = Classes.Key()
+acct_id = Classes.Id()
+restaurant = Classes.Restaurant_Name()
 
 if __name__ == '__main__':
     StartUp()
